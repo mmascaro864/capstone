@@ -115,12 +115,11 @@ def clean_transcript():
     clean_transcript:
         - prepare and clean transcript data for further processing
 
-    In:
+    IN:
         - None
 
-    Out:
-        - offers dataframe
-        - transactions dataframe 
+    OUT:
+        - cleaned transcript pandas dataframe 
     '''
     # read in json datafile
     transcript = pd.read_json('data/transcript.json', orient='records', lines=True)
@@ -134,44 +133,33 @@ def clean_transcript():
 
     # merge event_temp into transcript
     transcript = pd.concat([transcript, event_temp], axis = 1)
-
-    # create offers dataframe by pulling records where event is not equal 'transaction'
-    offers = transcript.query('event != "transaction"').copy()
-
-    # extract offer_id column from value column
-    offers['offer_id'] = offers['value'].apply(lambda x: list(x.values())[0])
-
+    
+    # extract offer_id and amount column from value column
+    transcript['offer_id'] = transcript.value.apply(extract_offer_id)
+    transcript['amount'] = transcript.value.apply(extract_amount)
+    
     # drop event and value
-    offers.drop(['event','value'], axis=1, inplace=True)
+    transcript.drop(['event','value'], axis=1, inplace=True)
 
     # rename columns
-    offers.rename(columns = {'offer completed' : 'offer_completed', 'offer received' : 'offer_received',
+    transcript.rename(columns = {'offer completed' : 'offer_completed', 'offer received' : 'offer_received',
                         'offer viewed' : 'offer_viewed'}, inplace = True)
 
     # reorder offers columns
-    col_order = ['offer_id', 'customer_id', 'time', 'offer_completed', 'offer_received', 'offer_viewed']
-    
-    # create transcations dataframe by pulling records where event is equal to 'transaction'
-    transactions = transcript.query('event == "transaction"').copy()
+    col_order = ['offer_id', 'customer_id', 'offer_completed', 'offer_received', 'offer_viewed', 'amount', 'time']
 
-    # extract amount column from value column
-    transactions['amount'] = transactions['value'].apply(lambda x: list(x.values())[0])
-
-    # drop unneeded columns
-    transactions.drop(['event','value', 'offer completed', 'offer received', 'offer viewed'], axis=1, inplace=True)
-
-    return offers.loc[:, col_order], transactions
+    return transcript.loc[:, col_order]
 
 def merge_data(portfolio, profile, offers, transactions):
     '''
     merge_data:
         - merge the cleaned datasets
-    In:
+    IN:
         - portfolio_clean - cleaned portfolio data
         - profile_clean - cleaned profile data
         - offers - clean transcripts data representing offfers
         - transactions - cleaned transcript data representing transactions
-    Out:
+    OUT:
         - starbucks_offers_data.csv - merged offers data
         - starbucks_transact_data.csv - merged transactions data
     '''
@@ -195,10 +183,10 @@ def age_bins(df):
     age_bins:
         - create age range bins
     
-    In:
+    IN:
         - dataframe with age column 
     
-    Out:
+    OUT:
         - dataframe with age column transformed into age bins
     '''
     age_ranges = pd.cut(df['age'], bins = [18, 29, 44, 59, 74, 89, 101],
@@ -220,10 +208,10 @@ def income_bins(df):
     income_bins:
         - create age range bins
     
-    In:
+    IN:
         - dataframe with income column 
     
-    Out:
+    OUT:
         - dataframe with income column transformed into income bins
     '''
     income_ranges = pd.cut(df['income'], bins = [30000, 49000, 69000, 89000, 109000, 120000],
