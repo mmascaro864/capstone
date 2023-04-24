@@ -1,7 +1,7 @@
 # import libraries
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 
 def clean_portfolio():
     '''
@@ -166,6 +166,12 @@ def merge_data(portfolio, profile, transcript):
 
     # merge combined_data_df with profile data
     combined_data_df = pd.merge(combined_data_df, profile, how = 'left', on = ['customer_id'])
+
+    # label encode customer_id and offer_id columns
+    label_encoder = LabelEncoder() # initialize LabelEncoder
+
+    combined_data_df['customer_id'] = label_encoder.fit_transform(combined_data_df.customer_id.values)
+    combined_data_df['offer_id'] = label_encoder.fit_transform(combined_data_df.offer_id.values)
 
     # save merged datasets as csv files
     combined_data_df.to_csv('data/starbucks_combined_data.csv', encoding = 'utf-8', index = False)
