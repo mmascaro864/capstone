@@ -82,6 +82,34 @@ def clean_profile():
 
     return profile.loc[:,col_order]
 
+def extract_offer_id(value):
+    '''
+    extract_offer_id:
+        - extract offer_id column from transcript dataframe value column
+    
+    IN:
+        - transcript dataframe value colum
+    
+    OUT:
+        - offer_id column extracted from value column where value key is 'offer id' or 'offer_id'
+    '''
+    if list(value.keys())[0] in ['offer id', 'offer_id']:
+        return list(value.values())[0]
+    
+def extract_amount(value):
+    '''
+    extract_offer_id:
+        - extract amount column from transcript dataframe value column
+        
+    IN:
+        - transcript dataframe value colum
+    
+    OUT:
+        - amount column extracted from value column where value key is 'amount'
+    '''
+    if list(value.keys())[0] in ['amount']:
+        return list(value.values())[0]
+
 def clean_transcript():
     '''
     clean_transcript:
