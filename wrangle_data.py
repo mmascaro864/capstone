@@ -150,31 +150,25 @@ def clean_transcript():
 
     return transcript.loc[:, col_order]
 
-def merge_data(portfolio, profile, offers, transactions):
+def merge_data(portfolio, profile, transcript):
     '''
     merge_data:
         - merge the cleaned datasets
     IN:
         - portfolio_clean - cleaned portfolio data
         - profile_clean - cleaned profile data
-        - offers - clean transcripts data representing offfers
-        - transactions - cleaned transcript data representing transactions
+        - transcript - cleaned transcript data customer offer and transaction data
     OUT:
-        - starbucks_offers_data.csv - merged offers data
-        - starbucks_transact_data.csv - merged transactions data
+        - starbucks_cleaned_data.csv - merged dataset
     '''
-    # merge offers data and portfolio data
-    combined_offers_df = pd.merge(offers, portfolio, how = 'left', on = ['offer_id'])
+    # merge transcript data and portfolio data
+    combined_data_df = pd.merge(transcript, portfolio, how = 'left', on = ['offer_id'])
 
-    # merge combined_offers with profile data
-    combined_offers_df = pd.merge(combined_offers_df, profile, how = 'left', on = ['customer_id'])
-
-    # merge transaction data with profile data
-    combined_transact_df = pd.merge(transactions, profile, how = 'left', on = ['customer_id'])
+    # merge combined_data_df with profile data
+    combined_data_df = pd.merge(combined_data_df, profile, how = 'left', on = ['customer_id'])
 
     # save merged datasets as csv files
-    combined_offers_df.to_csv('data/starbucks_offers_data.csv', encoding = 'utf-8', index = False)
-    combined_transact_df.to_csv('data/starbucks_transact_data.csv', encoding = 'utf-8', index = False)
+    combined_data_df.to_csv('data/starbucks_offers_data.csv', encoding = 'utf-8', index = False)
 
     return
 
