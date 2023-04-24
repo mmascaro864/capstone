@@ -168,7 +168,7 @@ def merge_data(portfolio, profile, transcript):
     combined_data_df = pd.merge(combined_data_df, profile, how = 'left', on = ['customer_id'])
 
     # save merged datasets as csv files
-    combined_data_df.to_csv('data/starbucks_offers_data.csv', encoding = 'utf-8', index = False)
+    combined_data_df.to_csv('data/starbucks_combined_data.csv', encoding = 'utf-8', index = False)
 
     return
 
