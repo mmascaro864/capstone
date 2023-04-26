@@ -28,7 +28,7 @@ def popular_recommendations(ranked_viewed, n_top):
     popular_recommendations:
         - return a ranked list
     INPUT:
-    ranked_completed - a dataframe of the ranked offer ids representing offers viewed and completed
+    ranked_completed - a dataframe of the ranked offer ids representing offers viewed and received
     n_top - an integer of the number recommendations you want back 
 
     OUTPUT:
