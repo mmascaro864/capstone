@@ -16,14 +16,14 @@ def create_ranked_offers(df):
     
     offers = df.groupby('offer_id').sum().reset_index()
     
-    ranked_completed = offers.loc[:,['offer_id','offer_viewed', 'offer_completed']]
-    ranked_completed['completion_ratio'] = ranked_completed['offer_completed'] / ranked_completed['offer_viewed']
+    ranked_viewed = offers.loc[:,['offer_id','offer_received', 'offer_viewed']]
+    ranked_viewed['completion_ratio'] = ranked_viewed['offer_viewed'] / ranked_viewed['offer_received']
     
-    ranked_completed = ranked_completed.sort_values(['completion_ratio'], ascending = False)
+    ranked_viewed = ranked_viewed.sort_values(['completion_ratio'], ascending = False)
     
-    return ranked_completed
+    return ranked_viewed
 
-def popular_recommendations(ranked_completed, n_top):
+def popular_recommendations(ranked_viewed, n_top):
     '''
     popular_recommendations:
         - return a ranked list
@@ -35,10 +35,10 @@ def popular_recommendations(ranked_completed, n_top):
     top_offers - a list of the n_top recommended offers
     '''
     # set max_offers equal to number of rows
-    max_offers = ranked_completed.shape[0]
+    max_offers = ranked_viewed.shape[0]
   
     if n_top <= max_offers:
-        top_offers = list(ranked_completed['offer_id'][:n_top])
+        top_offers = list(ranked_viewed['offer_id'][:n_top])
         print('The top ', n_top, ' offer recommendations: ')
     else:
         return print('Please enter a value less than or equal to {}'.format(max_offers))
