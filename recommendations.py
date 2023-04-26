@@ -5,7 +5,7 @@ import numpy as np
 def create_ranked_offers(df):
     '''
     create_ranked_offers:
-        - determine top ranked offers based on offers_completed vs. offers_received
+        - determine top ranked offers based on offers_completed vs. offers_viewed
     
     INPUT:
         - df: dataframe containing offers data
@@ -28,7 +28,7 @@ def popular_recommendations(ranked_completed, n_top):
     popular_recommendations:
         - return a ranked list
     INPUT:
-    ranked_completed - a dataframe of the ranked offer ids representing offers received and completed
+    ranked_completed - a dataframe of the ranked offer ids representing offers viewed and completed
     n_top - an integer of the number recommendations you want back 
 
     OUTPUT:
@@ -57,7 +57,8 @@ def create_user_item_matrix(df):
     Return a matrix with customer ids as rows and offer ids on the columns with 1 values where a user interacted with 
     an offer and a 0 otherwise
     '''
-    user_item = df.groupby(['customer_id', 'offer_id'])['offer_completed'].max().unstack()
-    user_item = user_item.notnull().astype(int)
+    user_items = combined_df[['customer_id', 'offer_id', 'offer_received']]
+    user_item_matrix = user_items.groupby(['customer_id', 'offer_id'])['offer_received'].max().unstack()
+    user_item_matrix = user_item_matrix.notnull().astype(int)
     
-    return user_item # return the user_item matrix 
+    return user_item_matrix # return the user_item matrix 
