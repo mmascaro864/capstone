@@ -16,8 +16,8 @@ def create_ranked_offers(df):
     
     offers = df.groupby('offer_id').sum().reset_index()
     
-    ranked_completed = offers.loc[:,['offer_id','offer_received', 'offer_completed']]
-    ranked_completed['completion_ratio'] = ranked_completed['offer_completed'] / ranked_completed['offer_received']
+    ranked_completed = offers.loc[:,['offer_id','offer_viewed', 'offer_completed']]
+    ranked_completed['completion_ratio'] = ranked_completed['offer_completed'] / ranked_completed['offer_viewed']
     
     ranked_completed = ranked_completed.sort_values(['completion_ratio'], ascending = False)
     
