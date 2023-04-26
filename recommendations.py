@@ -48,7 +48,7 @@ def popular_recommendations(ranked_completed, n_top):
 def create_user_item_matrix(df):
     '''
     INPUT:
-    df - pandas dataframe with customer_id, offer_id, and offer_completed columns
+    df - pandas dataframe with customer_id, offer_id, and offer_viewed columns
     
     OUTPUT:
     user_item - user item matrix 
@@ -57,8 +57,8 @@ def create_user_item_matrix(df):
     Return a matrix with customer ids as rows and offer ids on the columns with 1 values where a user interacted with 
     an offer and a 0 otherwise
     '''
-    user_items = combined_df[['customer_id', 'offer_id', 'offer_received']]
-    user_item_matrix = user_items.groupby(['customer_id', 'offer_id'])['offer_received'].max().unstack()
+    user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
+    user_item_matrix = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
     user_item_matrix = user_item_matrix.notnull().astype(int)
     
     return user_item_matrix # return the user_item matrix 
