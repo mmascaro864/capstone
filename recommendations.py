@@ -63,7 +63,7 @@ def create_user_item_matrix(df):
     
     return user_item_matrix # return the user_item matrix 
 
-def find_similar_users(customer_id, user_item=user_item):
+def find_similar_users(customer_id, user_item):
     '''
     INPUT:
     user_id - (int) a user_id
