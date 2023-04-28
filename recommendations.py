@@ -62,3 +62,34 @@ def create_user_item_matrix(df):
     user_item_matrix = user_item_matrix.notnull().astype(int)
     
     return user_item_matrix # return the user_item matrix 
+
+def find_similar_users(customer_id, user_item=user_item):
+    '''
+    INPUT:
+    user_id - (int) a user_id
+    user_item - (pandas dataframe) matrix of customer_id by offer_id: 
+                1's when a user has interacted with an offer, 0 otherwise
+    
+    OUTPUT:
+    similar_users - (list) an ordered list where the closest users (largest dot product users)
+                    are listed first
+    
+    Description:
+    Computes the similarity of every pair of users based on the dot product
+    Returns an ordered
+    
+    '''
+    # compute similarity of each user to the provided user
+    user_sim = user_item.dot(user_item.loc[customer_id])
+
+    # sort by similarity
+    #user_sim = user_sim[user_id].sort_values(ascending = False)
+    user_sim = pd.Series(data = user_sim, index = user_item.index).sort_values(ascending = False)
+
+    # create list of just the ids
+    most_similar_users = list(user_sim.index)
+   
+    # remove the own user's id
+    most_similar_users.remove(customer_id)
+       
+    return most_similar_users # return a list of the users in order from most to least similar
