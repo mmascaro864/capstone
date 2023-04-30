@@ -5,13 +5,13 @@ import numpy as np
 def create_ranked_offers(df):
     '''
     create_ranked_offers:
-        - determine top ranked offers based on offers_completed vs. offers_viewed
+        - determine top ranked offers based on offers_viewed vs. offers_received
     
     INPUT:
         - df: dataframe containing offers data
        
     OUTPUT:
-        - ranked_completed: the ranked completed offers
+        - ranked_completed: the ranked viewed offers
     '''
     
     offers = df.groupby('offer_id').sum().reset_index()
@@ -27,12 +27,13 @@ def popular_recommendations(ranked_viewed, n_top):
     '''
     popular_recommendations:
         - return a ranked list
+    
     INPUT:
-    ranked_completed - a dataframe of the ranked offer ids representing offers viewed and received
-    n_top - an integer of the number recommendations you want back 
+        - ranked_completed - a dataframe of the ranked offer ids representing offers viewed and received
+        - n_top - an integer of the number recommendations you want back 
 
     OUTPUT:
-    top_offers - a list of the n_top recommended offers
+        - top_offers - a list of the n_top recommended offers
     '''
     # set max_offers equal to number of rows
     max_offers = ranked_viewed.shape[0]
@@ -48,14 +49,14 @@ def popular_recommendations(ranked_viewed, n_top):
 def create_user_item_matrix(df):
     '''
     INPUT:
-    df - pandas dataframe with customer_id, offer_id, and offer_viewed columns
+        df - pandas dataframe with customer_id, offer_id, and offer_viewed columns
     
     OUTPUT:
-    user_item - user item matrix 
+        user_item - user item matrix 
     
     Description:
-    Return a matrix with customer ids as rows and offer ids on the columns with 1 values where a user interacted with 
-    an offer and a 0 otherwise
+        Return a matrix with customer ids as rows and offer ids on the columns with 1 values where a user viewed 
+        an offer and a 0 otherwise
     '''
     user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
     user_item_matrix = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
@@ -66,17 +67,17 @@ def create_user_item_matrix(df):
 def find_similar_users(customer_id, user_item):
     '''
     INPUT:
-    user_id - (int) a user_id
-    user_item - (pandas dataframe) matrix of customer_id by offer_id: 
+        user_id - (int) a user_id
+        user_item - (pandas dataframe) matrix of customer_id by offer_id: 
                 1's when a user has interacted with an offer, 0 otherwise
     
     OUTPUT:
-    similar_users - (list) an ordered list where the closest users (largest dot product users)
-                    are listed first
+        similar_users - (list) an ordered list where the closest users (largest dot product users)
+                        are listed first
     
     Description:
-    Computes the similarity of every pair of users based on the dot product
-    Returns an ordered
+        - Computes the similarity of every pair of users based on the dot product
+        Returns an ordered
     
     '''
     # compute similarity of each user to the provided user
