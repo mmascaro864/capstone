@@ -94,3 +94,35 @@ def find_similar_users(customer_id, user_item):
     most_similar_users.remove(customer_id)
        
     return most_similar_users # return a list of the users in order from most to least similar
+
+def offers_received(df, customer_id):
+    '''
+    INPUT:
+        df - combined dataframe post-cleaning
+        customer_id - the customer_id of an individual as int
+    OUTPUT:
+        offers - an array of offer_ids the user has received
+    '''
+    offer_ids = list(np.unique(df[df['customer_id'] == customer_id]['offer_id']))
+
+    return offer_ids
+
+def create_offers_to_analyze(offers_received, lower_bound=2):
+    '''
+    INPUT:  
+        offers_seen - a dictionary where each key is a customer_id and the value is an array of offer_ids
+        lower_bound - (an int) a user must have more movies seen than the lower bound to be added to the movies_to_analyze dictionary
+
+    OUTPUT: 
+    offers_to_analyze - a dictionary where each key is a customer_id and the value is an array of offer_ids
+    
+    The offers_seen and offers_to_analyze dictionaries should be the same except that the output dictionary has removed 
+    
+    '''
+    offers_to_analyze = dict()
+
+    for user, offers in offers_received.items():
+        if len(offers) > lower_bound:
+            offers_to_analyze[user] = offers
+    
+    return offers_to_analyze
