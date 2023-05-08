@@ -27,7 +27,7 @@ class Recommender():
             movie_mat - (numpy array) a latent feature by movie matrix
         '''
         self.offers = df.copy()
-        
+
         # create user item matrix
         user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
         self.user_item_df = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
@@ -97,6 +97,6 @@ class Recommender():
             self.movie_mat = offer_mat
 
             # Knowledge based fit
-            self.ranked_offers = rf.create_ranked_offers(self.movies, self.reviews)
+            self.ranked_offers = rf.create_ranked_offers(self.offers)
         
         return user_mat, offer_mat, mse_iter
