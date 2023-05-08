@@ -1,128 +1,91 @@
-# import necessary libraries
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-def create_ranked_offers(df):
+class Recommender():
     '''
-    create_ranked_offers:
-        - determine top ranked offers based on offers_viewed vs. offers_received
-    
-    INPUT:
-        - df: dataframe containing offers data
-       
-    OUTPUT:
-        - ranked_completed: the ranked viewed offers
+    This Recommender uses FunkSVD to make predictions of exact ratings.  And uses either FunkSVD or a Knowledge Based recommendation (highest ranked) to make recommendations for users.  Finally, if given a movie, the recommender will provide movies that are most similar as a Content Based Recommender.
     '''
+    def __init__(self):
+        '''
+        I didn't have any required attributes needed when creating my class.
+        '''
+        
+    def fit(self, df, latent_features=4, learning_rate=0.0001, iters=100):
+        '''
+        Purpose:
+            This function performs matrix factorization using a basic form of FunkSVD with no regularization
     
-    offers = df.groupby('offer_id').sum().reset_index()
+        INPUT:
+            ratings_mat - (numpy array) a matrix with users as rows, movies as columns, and ratings as values
+            latent_features - (int) the number of latent features used
+            learning_rate - (float) the learning rate 
+            iters - (int) the number of iterations
     
-    ranked_viewed = offers.loc[:,['offer_id', 'offer_received', 'offer_viewed']]
-    ranked_viewed['viewed_ratio'] = ranked_viewed['offer_viewed'] / ranked_viewed['offer_received']
-    
-    ranked_viewed = ranked_viewed.sort_values(['viewed_ratio'], ascending = False)
-    
-    return ranked_viewed
+        OUTPUT:
+            user_mat - (numpy array) a user by latent feature matrix
+            movie_mat - (numpy array) a latent feature by movie matrix
+        '''
+        # create user item matrix
+        user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
+        self.user_item_df = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
+        #self.user_item_df = user_item_matrix.notnull().astype(int)
+        self.user_item_mat= np.array(self.user_item_df)
 
-def popular_recommendations(ranked_viewed, n_top):
-    '''
-    popular_recommendations:
-        - return a ranked list
+        # Store more inputs
+        self.latent_features = latent_features
+        self.learning_rate = learning_rate
+        self.iters = iters
+
+        # Set up useful values to be used through the rest of the function
+        self.n_users = self.user_item_mat.shape[0]  # number of rows in the matrix
+        self.n_offers = self.user_item_mat.shape[1] # number of movies in the matrix
+        self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))  # total number of ratings in the matrix
+        self.user_ids_series = np.array(self.user_item_df.index)
+        self.movie_ids_series = np.array(self.user_item_df.columns)
+
+        # initialize the user and movie matrices with random values
+        # helpful link: https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html
+        user_mat = np.random.rand(self.n_users, self.latent_features)   # customer matrix filled with random values of shape customer x latent
+        offer_mat = np.random.rand(self.latent_features, self.n_offers) # offer matrix filled with random values of shape latent x offers
+
+        sse_accum = 0 # initialize sse at 0 for first iteration
+        mse_iter = [] # initialize MSE iteration list
     
-    INPUT:
-        - ranked_completed - a dataframe of the ranked offer ids representing offers viewed and received
-        - n_top - an integer of the number recommendations you want back 
+        # keep track of iteration and MSE
+        print("Optimization Statistics")
+        print("Iterations | Mean Squared Error ")
 
-    OUTPUT:
-        - top_offers - a list of the n_top recommended offers
-    '''
-    # set max_offers equal to number of rows
-    max_offers = ranked_viewed.shape[0]
-  
-    if n_top <= max_offers:
-        top_offers = list(ranked_viewed['offer_id'][:n_top])
-        print('The top ', n_top, ' offer recommendations: ')
-    else:
-        return print('Please enter a value less than or equal to {}'.format(max_offers))
+        # for each iteration
+        for iteration in range(iters):
 
-    return top_offers
+            # update our sse
+            old_sse = sse_accum
+            sse_accum = 0
+        
+            # For each user-offer pair
+            for i in range(self.n_users):
+                for j in range(self.n_offers):
+                
+                    # if the rating exists
+                    if self.user_item_mat[i, j] > 0:
+                    
+                        # compute the error as the actual minus the dot product of the user and offer latent features
+                        diff = self.user_item_mat[i, j] - np.dot(user_mat[i, :], offer_mat[:, j])
 
-def create_user_item_matrix(df):
-    '''
-    INPUT:
-        df - pandas dataframe with customer_id, offer_id, and offer_viewed columns
-    
-    OUTPUT:
-        user_item - user item matrix 
-    
-    Description:
-        Return a matrix with customer ids as rows and offer ids on the columns with 1 values where a user viewed 
-        an offer and a 0 otherwise
-    '''
-    user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
-    user_item_matrix = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
-    user_item_matrix = user_item_matrix.notnull().astype(int)
-    
-    return user_item_matrix # return the user_item matrix 
+                        # Keep track of the sum of squared errors for the matrix
+                        sse_accum += diff**2
 
-def find_similar_users(customer_id, user_item):
-    '''
-    INPUT:
-        user_id - (int) a user_id
-        user_item - (pandas dataframe) matrix of customer_id by offer_id: 
-                1's when a user has interacted with an offer, 0 otherwise
-    
-    OUTPUT:
-        similar_users - (list) an ordered list where the closest users (largest dot product users)
-                        are listed first
-    
-    Description:
-        - Computes the similarity of every pair of users based on the dot product
-        Returns an ordered
-    
-    '''
-    # compute similarity of each user to the provided user
-    user_sim = user_item.dot(user_item.loc[customer_id])
+                        # update the values in each matrix in the direction of the gradient
+                        for k in range(latent_features):
+                            user_mat[i, k] += learning_rate * (2*diff*offer_mat[k, j])
+                            offer_mat[k, j] += learning_rate * (2*diff*user_mat[i, k])
 
-    # sort by similarity
-    #user_sim = user_sim[user_id].sort_values(ascending = False)
-    user_sim = pd.Series(data = user_sim, index = user_item.index).sort_values(ascending = False)
-
-    # create list of just the ids
-    most_similar_users = list(user_sim.index)
-   
-    # remove the own user's id
-    most_similar_users.remove(customer_id)
-       
-    return most_similar_users # return a list of the users in order from most to least similar
-
-def offers_received(df, customer_id):
-    '''
-    INPUT:
-        df - combined dataframe post-cleaning
-        customer_id - the customer_id of an individual as int
-    OUTPUT:
-        offers - an array of offer_ids the user has received
-    '''
-    offer_ids = list(np.unique(df[df['customer_id'] == customer_id]['offer_id']))
-
-    return offer_ids
-
-def create_offers_to_analyze(offers_received, lower_bound=2):
-    '''
-    INPUT:  
-        offers_seen - a dictionary where each key is a customer_id and the value is an array of offer_ids
-        lower_bound - (an int) a user must have more movies seen than the lower bound to be added to the movies_to_analyze dictionary
-
-    OUTPUT: 
-    offers_to_analyze - a dictionary where each key is a customer_id and the value is an array of offer_ids
-    
-    The offers_seen and offers_to_analyze dictionaries should be the same except that the output dictionary has removed 
-    
-    '''
-    offers_to_analyze = dict()
-
-    for user, offers in offers_received.items():
-        if len(offers) > lower_bound:
-            offers_to_analyze[user] = offers
-    
-    return offers_to_analyze
+            # print results every 15 iterations
+            if iteration % 15 == 0:
+                print("%d \t\t %f" % (iteration+1, sse_accum / self.num_ratings))
+            
+            # save mse for plots
+            mse = sse_accum / self.num_ratings
+            mse_iter.append(mse)
+        
+        return user_mat, offer_mat, mse_iter
