@@ -173,4 +173,61 @@ def user_user_recs(customer_id, user_item_matrix, m = 10):
     
     recs = recs[:m] 
     
-    return recs # return your recommendations for this customer_id    
+    return recs # return your recommendations for this customer_id   
+
+def compute_correlation(user_item_matrix, user1, user2):
+    '''
+    INPUT
+        user1 - int customer_id
+        user2 - int customer_id
+    OUTPUT
+        corr - the correlation between the matching offers between the two users
+    '''
+    # create dataframe from users
+    corr_df = user_item_matrix.loc[[user1, user2]]
+    
+    # calculate correlation
+    corr = corr_df.transpose().corr().iloc[0,1]
+    
+    return corr # return correlation 
+
+def compute_euclidean_dist(user_item_matrix, user1, user2):
+    '''
+    INPUT
+        user1 - int customer_id
+        user2 - int customer_id
+    OUTPUT
+        dist - the euclidean distance between user1 and user2
+    '''
+    # get customer data
+    cust1 = user_item_matrix.loc[user1]
+    cust2 = user_item_matrix.loc[user2]
+    
+    # compute the difference
+    diff = cust1 - cust2
+    
+    # drop missing values
+    diff = diff.dropna()
+    
+    #calculate the norm
+    dist = np.linalg.norm(diff)
+    
+    return dist #return the correlation
+
+def compute_manhattan_dist(user_item_matrix, user1, user2):
+    '''
+    INPUT
+        user1 - int customer_id
+        user2 - int customer_id
+    OUTPUT
+        dist - the manhattan distance between user1 and user2
+    '''
+    from scipy.spatial import distance
+    
+    # create dataframe from users
+    df = user_item_matrix.loc[[user1, user2]]
+    
+    # Calculate Manhattan distance between the users
+    dist = distance.cityblock(df.loc[user1], df.loc[user2])
+    
+    return dist #return the manhattan distance
