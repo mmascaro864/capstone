@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import recommender_functions as rf
 
 class Recommender():
     '''
@@ -25,6 +26,8 @@ class Recommender():
             user_mat - (numpy array) a user by latent feature matrix
             movie_mat - (numpy array) a latent feature by movie matrix
         '''
+        self.offers = df.copy()
+        
         # create user item matrix
         user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
         self.user_item_df = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
@@ -87,5 +90,13 @@ class Recommender():
             # save mse for plots
             mse = sse_accum / self.num_ratings
             mse_iter.append(mse)
+
+            # SVD based fit
+            # Keep user_mat and movie_mat for safe keeping
+            self.user_mat = user_mat
+            self.movie_mat = offer_mat
+
+            # Knowledge based fit
+            self.ranked_offers = rf.create_ranked_offers(self.movies, self.reviews)
         
         return user_mat, offer_mat, mse_iter
