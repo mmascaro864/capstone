@@ -43,8 +43,8 @@ class Recommender():
         self.n_users = self.user_item_mat.shape[0]  # number of rows in the matrix
         self.n_offers = self.user_item_mat.shape[1] # number of movies in the matrix
         self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))  # total number of ratings in the matrix
-        self.user_ids_series = np.array(self.user_item_df.index)
-        self.movie_ids_series = np.array(self.user_item_df.columns)
+        self.customer_ids_series = np.array(self.user_item_df.index)
+        self.offer_ids_series = np.array(self.user_item_df.columns)
 
         # initialize the user and movie matrices with random values
         # helpful link: https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html
@@ -100,3 +100,26 @@ class Recommender():
             self.ranked_offers = rf.create_ranked_offers(self.offers)
         
         return user_mat, offer_mat, mse_iter
+    
+    def predict_offer(self, customer_id, offer_id):
+        '''
+
+        '''
+        try:
+            # customer row and offer column
+            customer_row = np.where(self.customer_ids_series == customer_id)[0][0]
+            offer_col = np.where(self.offer_ids_series == offer_id)[0][0]
+
+            # Take dot product of that row and column in U and V to make prediction
+            pred = np.dot(self.user_mat[customer_row, :], self.offer_mat[:, offer_col])
+
+            offer_name = str(self.offers[self.offers['offer_id'] == offer_id]['offer_type']) [5:]
+            offer_name = offer_name.replace('\nName: movie, dtype: object', '')
+            print("For user {} we predict a {} rating for the movie {}.".format(customer_id, round(pred, 2), str(offer_name)))
+
+            return pred
+
+        except:
+            print("I'm sorry, but a prediction cannot be made for this user-movie pair.  It looks like one of these items does not exist in our current database.")
+
+            return None
