@@ -159,6 +159,7 @@ class Recommender():
                 # if we don't have this user, give just top ratings back
                 rec_offers = rf.popular_recommendations(_id, rec_num, self.ranked_offers)
                 print("Because this user wasn't in our database, we are giving back the top offer recommendations for all users.")
+                print('Top offer recommendations: {}'.format(rec_offers))
         
             
         # Find similar movies if it is a movie that is passed
