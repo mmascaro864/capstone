@@ -62,7 +62,7 @@ def popular_recommendations(customer_id, n_top, ranked_viewed):
         top_offers = list(ranked_viewed['offer_id'][:n_top])
         print('The top {} offer recommendations for customer {}:'.format(n_top, customer_id))
     else:
-        return print('Please enter an offer_id value less than or equal to {}.'.format(max_offers))
+        return print('Please enter an offer_id value less than or equal to {}.'.format(max_offers - 1))
 
     return top_offers
 
