@@ -154,6 +154,7 @@ class Recommender():
                 indices = preds.argsort()[-rec_num:][::-1] #indices
                 rec_ids = self.offer_ids_series[indices]
                 rec_offers = rf.get_offer_ids(rec_ids, self.offers)
+                print('Top offers according to prediction: {}'.format(rec_offers))
             
             else:
                 # if we don't have this user, give just top ratings back
