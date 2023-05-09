@@ -103,7 +103,12 @@ class Recommender():
     
     def predict_offer(self, customer_id, offer_id):
         '''
-
+        INPUT:
+        customer_id - the customer_id
+        offer_id - the offer_id 
+    
+        OUTPUT:
+        pred - the predicted reaction for customer_id / offer_id according to FunkSVD
         '''
         try:
             # customer row and offer column
@@ -123,3 +128,44 @@ class Recommender():
             print("I'm sorry, but a prediction cannot be made for this user-movie pair.  It looks like one of these items does not exist in our current database.")
 
             return None
+        
+    def make_recs(self, _id, _id_type='offer', rec_num = 5):
+        '''
+        Input:
+            _id - either a user or movie id (int)
+            _id_type - "movie" or "user" (str)
+            rec_num - number of recommendations to return (int)
+
+        Output:
+            recs - (array) a list or numpy array of recommended movies like the 
+            given movie, or recs for a user_id given
+        '''
+
+        rec_ids = None #rec_names = None, None
+        if _id_type == 'customer':
+            if _id in self.user_ids_series:
+                # Get the index of which row the user is in for use in U matrix
+                idx = np.where(self.user_ids_series == _id)[0][0]
+                
+                # take the dot product of that row and the V matrix
+                preds = np.dot(self.user_mat[idx,:],self.offer_mat)
+                
+                # pull the top movies according to the prediction
+                indices = preds.argsort()[-rec_num:][::-1] #indices
+                rec_ids = self.offer_ids_series[indices]
+                rec_offers = rf.get_offer_ids(rec_ids, self.offers)
+            
+            else:
+                # if we don't have this user, give just top ratings back
+                rec_offers = rf.popular_recommendations(_id, rec_num, self.ranked_offers)
+                print("Because this user wasn't in our database, we are giving back the top movie recommendations for all users.")
+        
+            
+        # Find similar movies if it is a movie that is passed
+        else:
+            if _id in self.movie_ids_series:
+                rec_offers = list(rf.find_similar_users(_id, self.offers))[:rec_num]
+            else:
+                print("That movie doesn't exist in our database.  Sorry, we don't have any recommendations for you.")
+    
+        return rec_ids, rec_offers

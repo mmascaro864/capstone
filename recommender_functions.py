@@ -48,21 +48,21 @@ def popular_recommendations_old(ranked_viewed, n_top):
 def popular_recommendations(customer_id, n_top, ranked_viewed):
     '''
     INPUT:
-        user_id - the user_id (str) of the individual you are making recommendations for
+        customer_id - the customer_id (str) of the individual you are making recommendations for
         n_top - an integer of the number recommendations you want back
-        ranked_movies - a pandas dataframe of the already ranked movies based on avg rating, count, and time
+        ranked_viewed - a dataframe of the ranked offer ids representing offers viewed and received
 
     OUTPUT:
-        top_movies - a list of the n_top recommended movies by movie title in order best to worst
+        top_offers - a list of the n_top recommended offers
     '''
     # set max_offers equal to number of rows
     max_offers = ranked_viewed.shape[0]
     
     if n_top <= max_offers:
         top_offers = list(ranked_viewed['offer_id'][:n_top])
-        print('The top {} offer recommendations for customer {} :'.format(n_top, customer_id))
+        print('The top {} offer recommendations for customer {}:'.format(n_top, customer_id))
     else:
-        return print('Please enter a value less than or equal to {}'.format(max_offers))
+        return print('Please enter an offer_id value less than or equal to {}.'.format(max_offers))
 
     return top_offers
 
