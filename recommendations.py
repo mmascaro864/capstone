@@ -94,7 +94,7 @@ class Recommender():
             # SVD based fit
             # Keep user_mat and movie_mat for safe keeping
             self.user_mat = user_mat
-            self.movie_mat = offer_mat
+            self.offer_mat = offer_mat
 
             # Knowledge based fit
             self.ranked_offers = rf.create_ranked_offers(self.offers)
