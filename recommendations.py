@@ -141,7 +141,7 @@ class Recommender():
             given movie, or recs for a user_id given
         '''
 
-        rec_ids = None #rec_names = None, None
+        rec_ids, rec_offers = None, None
         if _id_type == 'customer':
             if _id in self.customer_ids_series:
                 # Get the index of which row the user is in for use in U matrix
@@ -164,8 +164,8 @@ class Recommender():
         # Find similar movies if it is a movie that is passed
         else:
             if _id in self.offer_ids_series:
-                rec_offers = list(rf.find_similar_users(_id, self.offers))[:rec_num]
+                rec_offers = list(rf.find_similar_users(_id, self.offer_mat))[:rec_num]
             else:
-                print("That offer doesn't exist in our database.\n Sorry, we don't have any recommendations for you.")
+                print("That offer doesn't exist in our database.\nSorry, we don't have any recommendations for you.")
     
         return rec_ids, rec_offers
