@@ -118,9 +118,7 @@ class Recommender():
             # Take dot product of that row and column in U and V to make prediction
             pred = np.dot(self.user_mat[customer_row, :], self.offer_mat[:, offer_col])
 
-            #offer_name = str(self.offers[self.offers['offer_id'] == offer_id]['offer_type']) [5:]
-            #offer_name = offer_name.replace('\nName: movie, dtype: object', '')
-            #print("For user {} we predict a {} rating for the movie {}.".format(customer_id, round(pred, 2), str(offer_name)))
+            print('For user {}, we predict a {} rating for offer {}.'.format(customer_id, pred, offer_id))
 
             return pred
 
@@ -154,7 +152,7 @@ class Recommender():
                 indices = preds.argsort()[-rec_num:][::-1] #indices
                 rec_ids = self.offer_ids_series[indices]
                 rec_offers = rf.get_offer_ids(rec_ids, self.offers)
-                print('Top offers according to prediction: {}'.format(rec_offers))
+                print('Top offers for customer {} according to prediction: {}'.format(_id, rec_offers))
             
             else:
                 # if we don't have this user, give just top ratings back
@@ -166,7 +164,7 @@ class Recommender():
         # Find similar movies if it is a movie that is passed
         else:
             if _id in self.offer_ids_series:
-                rec_offers = list(rf.find_similar_users(_id, self.offer_mat))[:rec_num]
+                rec_offers = list(rf.find_similar_users(_id, self.offers))[:rec_num]
             else:
                 print("That offer doesn't exist in our database.\nSorry, we don't have any recommendations for you.")
     
