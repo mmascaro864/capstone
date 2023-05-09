@@ -143,9 +143,9 @@ class Recommender():
 
         rec_ids = None #rec_names = None, None
         if _id_type == 'customer':
-            if _id in self.user_ids_series:
+            if _id in self.customer_ids_series:
                 # Get the index of which row the user is in for use in U matrix
-                idx = np.where(self.user_ids_series == _id)[0][0]
+                idx = np.where(self.customer_ids_series == _id)[0][0]
                 
                 # take the dot product of that row and the V matrix
                 preds = np.dot(self.user_mat[idx,:],self.offer_mat)
@@ -158,7 +158,7 @@ class Recommender():
             else:
                 # if we don't have this user, give just top ratings back
                 rec_offers = rf.popular_recommendations(_id, rec_num, self.ranked_offers)
-                print("Because this user wasn't in our database, we are giving back the top movie recommendations for all users.")
+                print("Because this user wasn't in our database, we are giving back the top offer recommendations for all users.")
         
             
         # Find similar movies if it is a movie that is passed
@@ -166,6 +166,6 @@ class Recommender():
             if _id in self.offer_ids_series:
                 rec_offers = list(rf.find_similar_users(_id, self.offers))[:rec_num]
             else:
-                print("That movie doesn't exist in our database.  Sorry, we don't have any recommendations for you.")
+                print("That offer doesn't exist in our database.\n Sorry, we don't have any recommendations for you.")
     
         return rec_ids, rec_offers
