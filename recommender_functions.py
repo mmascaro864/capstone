@@ -55,8 +55,14 @@ def popular_recommendations(customer_id, n_top, ranked_viewed):
     OUTPUT:
         top_movies - a list of the n_top recommended movies by movie title in order best to worst
     '''
-
-    top_offers = list(ranked_viewed['offer_id'][:n_top])
+    # set max_offers equal to number of rows
+    max_offers = ranked_viewed.shape[0]
+    
+    if n_top <= max_offers:
+        top_offers = list(ranked_viewed['offer_id'][:n_top])
+        print('The top {} offer recommendations for customer {} :'.format(n_top, customer_id))
+    else:
+        return print('Please enter a value less than or equal to {}'.format(max_offers))
 
     return top_offers
 
