@@ -113,9 +113,9 @@ class Recommender():
             # Take dot product of that row and column in U and V to make prediction
             pred = np.dot(self.user_mat[customer_row, :], self.offer_mat[:, offer_col])
 
-            offer_name = str(self.offers[self.offers['offer_id'] == offer_id]['offer_type']) [5:]
-            offer_name = offer_name.replace('\nName: movie, dtype: object', '')
-            print("For user {} we predict a {} rating for the movie {}.".format(customer_id, round(pred, 2), str(offer_name)))
+            #offer_name = str(self.offers[self.offers['offer_id'] == offer_id]['offer_type']) [5:]
+            #offer_name = offer_name.replace('\nName: movie, dtype: object', '')
+            #print("For user {} we predict a {} rating for the movie {}.".format(customer_id, round(pred, 2), str(offer_name)))
 
             return pred
 
