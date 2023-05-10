@@ -31,7 +31,7 @@ class Recommender():
         # create user item matrix
         user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
         self.user_item_df = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
-        #self.user_item_df = user_item_matrix.notnull().astype(int)
+        self.user_item_df = self.user_item_df.notnull().astype(int)
         self.user_item_mat= np.array(self.user_item_df)
 
         # Store more inputs
@@ -130,13 +130,13 @@ class Recommender():
     def make_recs(self, _id, _id_type='offer', rec_num = 5):
         '''
         Input:
-            _id - either a user or movie id (int)
-            _id_type - "movie" or "user" (str)
+            _id - either a customer or offer id (int)
+            _id_type - "offer" or "customer" (str)
             rec_num - number of recommendations to return (int)
 
         Output:
-            recs - (array) a list or numpy array of recommended movies like the 
-            given movie, or recs for a user_id given
+            recs - (array) a list or numpy array of recommended offers like the 
+            given offer, or recs for a customer_id given
         '''
 
         rec_ids, rec_offers = None, None
