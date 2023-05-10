@@ -22,28 +22,6 @@ def create_ranked_offers(df):
     
     return ranked_viewed
 
-def find_similar_offers(offer_id, df):
-    '''
-    INPUT
-    movie_id - a movie_id
-    movies_df - original movies dataframe
-    OUTPUT
-    similar_movies - an array of the most similar movies by title
-    '''
-    # dot product to get similar movies
-    offer_content = np.array(df.iloc[:,4:])
-    dot_prod_offers = offer_content.dot(np.transpose(offer_content))
-
-    # find the row of each movie id
-    offer_idx = np.where(df['offer_id'] == offer_id)[0][0]
-
-    # find the most similar movie indices - to start I said they need to be the same for all content
-    similar_idxs = np.where(dot_prod_offers[offer_idx] == np.max(dot_prod_offers[offer_idx]))[0]
-
-    # pull the movie titles based on the indices
-    similar_offers = np.array(df.iloc[similar_idxs, ]['offer_id'])
-
-    return similar_offers
 
 def popular_recommendations(customer_id, n_top, ranked_viewed):
     '''

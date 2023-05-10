@@ -127,7 +127,7 @@ class Recommender():
 
             return None
         
-    def make_recs(self, _id, _id_type='offer', rec_num = 5):
+    def make_recs(self, _id, _cust_id, rec_num = 5):
         '''
         Input:
             _id - either a customer or offer id (int)
@@ -140,33 +140,23 @@ class Recommender():
         '''
 
         rec_ids, rec_offers = None, None
-        if _id_type == 'customer':
-            if _id in self.customer_ids_series:
-                # Get the index of which row the user is in for use in U matrix
-                idx = np.where(self.customer_ids_series == _id)[0][0]
+        if _id in self.customer_ids_series:
+            # Get the index of which row the user is in for use in U matrix
+            idx = np.where(self.customer_ids_series == _id)[0][0]
                 
-                # take the dot product of that row and the V matrix
-                preds = np.dot(self.user_mat[idx,:],self.offer_mat)
+            # take the dot product of that row and the V matrix
+            preds = np.dot(self.user_mat[idx,:],self.offer_mat)
                 
-                # pull the top movies according to the prediction
-                indices = preds.argsort()[-rec_num:][::-1] #indices
-                rec_ids = self.offer_ids_series[indices]
-                rec_offers = rf.get_offer_ids(rec_ids, self.offers)
-                print('Top offers for customer {} according to prediction: {}'.format(_id, rec_offers))
+            # pull the top movies according to the prediction
+            indices = preds.argsort()[-rec_num:][::-1] #indices
+            rec_ids = self.offer_ids_series[indices]
+            rec_offers = rf.get_offer_ids(rec_ids, self.offers)
+            print('Top offers for customer {} according to prediction: {}'.format(_id, rec_offers))
             
-            else:
-                # if we don't have this user, give just top ratings back
-                rec_offers = rf.popular_recommendations(_id, rec_num, self.ranked_offers)
-                print("Because this user wasn't in our database, we are giving back the top offer recommendations for all users.")
-                print('Top offer recommendations: {}'.format(rec_offers))
-        
-            
-        # Find similar movies if it is a movie that is passed
         else:
-            if _id in self.offer_ids_series:
-                rec_offers = list(rf.find_similar_offers(_id, self.offers))[:rec_num]
-                print('Valid offers based on offer {}: {}'.format(_id, rec_offers))
-            else:
-                print("That offer doesn't exist in our database.\nSorry, we don't have any recommendations for you.")
-    
+            # if we don't have this user, give just top ratings back
+            rec_offers = rf.popular_recommendations(_id, rec_num, self.ranked_offers)
+            print("Because this user wasn't in our database, we are giving back the top offer recommendations for all users.")
+            print('Top offer recommendations: {}'.format(rec_offers))
+        
         return rec_ids, rec_offers
