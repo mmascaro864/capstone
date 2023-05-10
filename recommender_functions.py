@@ -22,28 +22,28 @@ def create_ranked_offers(df):
     
     return ranked_viewed
 
-def popular_recommendations_old(ranked_viewed, n_top):
+def find_similar_offers(offer_id, df):
     '''
-    popular_recommendations:
-        - return a ranked list
-    
-    INPUT:
-        - ranked_completed - a dataframe of the ranked offer ids representing offers viewed and received
-        - n_top - an integer of the number recommendations you want back 
-
-    OUTPUT:
-        - top_offers - a list of the n_top recommended offers
+    INPUT
+    movie_id - a movie_id
+    movies_df - original movies dataframe
+    OUTPUT
+    similar_movies - an array of the most similar movies by title
     '''
-    # set max_offers equal to number of rows
-    max_offers = ranked_viewed.shape[0]
-  
-    if n_top <= max_offers:
-        top_offers = list(ranked_viewed['offer_id'][:n_top])
-        print('The top ', n_top, ' offer recommendations: ')
-    else:
-        return print('Please enter a value less than or equal to {}'.format(max_offers))
+    # dot product to get similar movies
+    offer_content = np.array(df.iloc[:,4:])
+    dot_prod_offers = offer_content.dot(np.transpose(offer_content))
 
-    return top_offers
+    # find the row of each movie id
+    offer_idx = np.where(df['offer_id'] == offer_id)[0][0]
+
+    # find the most similar movie indices - to start I said they need to be the same for all content
+    similar_idxs = np.where(dot_prod_offers[offer_idx] == np.max(dot_prod_offers[offer_idx]))[0]
+
+    # pull the movie titles based on the indices
+    similar_offers = np.array(df.iloc[similar_idxs, ]['offer_id'])
+
+    return similar_offers
 
 def popular_recommendations(customer_id, n_top, ranked_viewed):
     '''
@@ -87,7 +87,7 @@ def create_user_item_matrix(df):
 def find_similar_users(customer_id, user_item):
     '''
     INPUT:
-        user_id - (int) a user_id
+        customer_id - (int) a customer_id
         user_item - (pandas dataframe) matrix of customer_id by offer_id: 
                 1's when a user has interacted with an offer, 0 otherwise
     
