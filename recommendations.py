@@ -164,7 +164,7 @@ class Recommender():
         # Find similar movies if it is a movie that is passed
         else:
             if _id in self.offer_ids_series:
-                rec_offers = list(rf.find_similar_users(_id, self.offers))[:rec_num]
+                rec_offers = list(rf.find_similar_offers(_id, self.offers))[:rec_num]
                 print('Valid offers based on offer {}: {}'.format(_id, rec_offers))
             else:
                 print("That offer doesn't exist in our database.\nSorry, we don't have any recommendations for you.")
