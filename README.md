@@ -21,5 +21,6 @@
 | Reference Item      | URL                         |
 |---------------------|-----------------------------|
 | MultiLabelBinarizer | https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MultiLabelBinarizer.html
+| LabelEncoder        | https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.MultiLabelBinarizer.html
 
 ## Acknowledgements
