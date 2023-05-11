@@ -5,14 +5,32 @@
 
 # Contents
 * [Project Motivation](#project-motivation)
-* [Libraries Used](#libraries-used)
+* [Python Version and Libraries Used](#python-version-and-libraries-used)
 * [Files in Repository](#files-in-repository)
 * [References](#references)
 * [Acknowledgements](#acknowledgements)
 
 ## Project Motivation
 
-## Libraries Used
+## Python Version and Libraries Used
+**Python Version:** 3.9.16 
+
+The following standard libraries were used:
+- pandas
+- numpy
+- matplotlib
+- seaborn
+- math
+- json
+- sklearn
+  - MultiLabelBinarizer
+  - LabelEncoder
+  - train_test_split
+
+The following self-written libraries were used:
+- wrangle_data - provides data cleaning functions
+- recommender.py - Recommender class and associated functions
+- recommender_functions.py - additional functions associated with recommender
 
 ## Files in Repository
 
