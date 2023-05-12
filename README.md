@@ -76,4 +76,4 @@ The following files are in the repository:
               
 
 ## Acknowledgements
-[Starbucks](https://www.starbucks.com/) - for providing the datasets for this project
+[Udacity](https://www.udacity.com/) and [Starbucks](https://www.starbucks.com/) - for providing the datasets for this project.
