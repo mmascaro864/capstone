@@ -28,7 +28,7 @@ The following standard libraries were used:
   - train_test_split
 
 The following self-written libraries were used:
-- wrangle_data - provides data cleaning functions
+- wrangle_data.py - provides data cleaning functions
 - recommender.py - Recommender class and associated functions
 - recommender_functions.py - additional functions associated with recommender
 
@@ -63,7 +63,7 @@ The following files are in the repository:
 | Pandas .at() | https://www.geeksforgeeks.org/python-pandas-dataframe-at/
 | Create dataframe from multiple numpy arrays | https://stackoverflow.com/questions/49263247/how-can-i-make-a-pandas-dataframe-out-of-multiple-numpy-arrays
 | Train/Test/Split usage | https://www.geeksforgeeks.org/how-to-split-the-dataset-with-scikit-learns-train_test_split-function/
-
+| Create dataframe from dataframe .describe() | https://stackoverflow.com/questions/34026089/create-dataframe-from-another-dataframe-describe-pandas
               
 
 ## Acknowledgements
