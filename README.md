@@ -33,6 +33,19 @@ The following self-written libraries were used:
 - recommender_functions.py - additional functions associated with recommender
 
 ## Files in Repository
+The following files are in the repository:
+
+| File | Description |
+|------|-------------|
+| coffee_cups.jpg | Picture of two Starbucks coffee mugs taken in my kitchen |
+| recommender.py | Sets up Recommender class that fits FunkSVD model, predicts offers, and makes recommendations |
+| recommender_functions.py | Companion functions to Recommender |
+| starbucks_capstone.ipynb | Jupyter notebook that drives the analysis of the Starbucks data |
+| wrangle_data.py | Functions to clean and combine source data |
+| data/portfolio.json | Starbucks offer portfolio event data
+| data/profile.json | Starbucks rewards customer data
+| data/starbucks_combined_data.csv | Cleaned, combined Starbucks dataset
+| data/transcript.json | Starbucks event log |
 
 ## References
 
