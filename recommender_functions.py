@@ -126,7 +126,7 @@ def get_user_offers(customer_id, user_item):
     '''
     offer_ids = list(user_item.loc[customer_id][user_item.loc[customer_id] == 1].index.astype(str))
     
-    return offer_ids # return the ids and names
+    return offer_ids # return the ids 
 
 def user_user_recs(customer_id, user_item_matrix, m = 10):
     '''

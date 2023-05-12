@@ -24,7 +24,7 @@ class Recommender():
     
         OUTPUT:
             user_mat - (numpy array) a user by latent feature matrix
-            movie_mat - (numpy array) a latent feature by movie matrix
+            offer_mat - (numpy array) a latent feature by offers matrix
         '''
         self.offers = df.copy()
 
@@ -41,7 +41,7 @@ class Recommender():
 
         # Set up useful values to be used through the rest of the function
         self.n_users = self.user_item_mat.shape[0]  # number of rows in the matrix
-        self.n_offers = self.user_item_mat.shape[1] # number of movies in the matrix
+        self.n_offers = self.user_item_mat.shape[1] # number of offers in the matrix
         self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))  # total number of ratings in the matrix
         self.customer_ids_series = np.array(self.user_item_df.index)
         self.offer_ids_series = np.array(self.user_item_df.columns)
