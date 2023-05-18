@@ -56,7 +56,7 @@ class Recommender():
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
-        print("Iterations | Mean Squared Error | Mean Absolute Error")
+        #print("Iterations | Mean Squared Error | Mean Absolute Error")
 
         # for each iteration
         for iteration in range(iters):
@@ -87,7 +87,8 @@ class Recommender():
 
             # print results every 15 iterations
             if iteration % 15 == 0:
-                print("%d \t\t %f \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
+                #print("%d \t\t %f \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
+                print('Iteration {}: MSE = {}, MSA = {}'.format(iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
