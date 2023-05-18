@@ -87,7 +87,7 @@ class Recommender():
 
             # print results every 15 iterations
             if iteration % 15 == 0:
-                print("%d \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
+                print("%d \t\t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
