@@ -11,7 +11,7 @@ class Recommender():
         I didn't have any required attributes needed when creating my class.
         '''
         
-    def fit(self, df, latent_features=4, learning_rate=0.0001, iters=100):
+    def fit(self, df, latent_features=4, learning_rate=0.005, iters=100):
         '''
         Purpose:
             This function performs matrix factorization using a basic form of FunkSVD with no regularization
@@ -127,11 +127,10 @@ class Recommender():
 
             return None
         
-    def make_recs(self, _id, _cust_id, rec_num = 5):
+    def make_recs(self, _id, rec_num = 5):
         '''
         Input:
-            _id - either a customer or offer id (int)
-            _id_type - "offer" or "customer" (str)
+            _id - a customer id (int)
             rec_num - number of recommendations to return (int)
 
         Output:
