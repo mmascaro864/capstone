@@ -127,7 +127,7 @@ class Recommender():
 
             return None
         
-    def make_recs(self, _id, rec_num = 5):
+    def make_recs(self, _id, _cust_id, rec_num = 5):
         '''
         Input:
             _id - a customer id (int)
