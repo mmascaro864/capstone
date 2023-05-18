@@ -56,7 +56,7 @@ class Recommender():
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
-        print("Iterations | Mean Squared Error ")
+        print("Iterations | Mean Squared Error | Mean Absolute Error")
 
         # for each iteration
         for iteration in range(iters):
@@ -64,6 +64,7 @@ class Recommender():
             # update our sse
             old_sse = sse_accum
             sse_accum = 0
+            ae_accum = 0
         
             # For each user-offer pair
             for i in range(self.n_users):
@@ -77,6 +78,7 @@ class Recommender():
 
                         # Keep track of the sum of squared errors for the matrix
                         sse_accum += diff**2
+                        ae_accum += abs(diff)
 
                         # update the values in each matrix in the direction of the gradient
                         for k in range(latent_features):
@@ -85,7 +87,7 @@ class Recommender():
 
             # print results every 15 iterations
             if iteration % 15 == 0:
-                print("%d \t\t %f" % (iteration+1, sse_accum / self.num_ratings))
+                print("%d \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
