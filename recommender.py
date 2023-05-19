@@ -121,7 +121,7 @@ class Recommender():
                     
                         # compute the error as the actual minus the dot product of the user and offer latent features
                         diff = self.val_user_item_mat[i, j] - np.dot(val_user_mat[i, :], val_offer_mat[:, j])
-
+                        print(diff)
                         # Keep track of the sum of squared errors for the matrix
                         val_sse_accum += diff**2
                         val_ae_accum += abs(diff)
