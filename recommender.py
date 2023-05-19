@@ -80,20 +80,9 @@ class Recommender():
         # keep track of iteration and MSE
         print("Optimization Statistics")
         print(f'{"-" * 25}')
-        #print("Iterations | Mean Squared Error | Mean Absolute Error")
 
         # for each iteration
         for iteration in range(iters):
-
-            # update our sse and ae
-            old_train_sse = train_sse_accum
-            old_val_sse = val_sse_accum
-            old_train_aee = train_ae_accum
-            old_val_ae = val_ae_accum
-            train_sse_accum = 0
-            val_sse_accum = 0
-            train_ae_accum = 0
-            val_ae_accum = 0
         
             # train model
             for i in range(self.n_users_train):
