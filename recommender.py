@@ -11,7 +11,7 @@ class Recommender():
         I didn't have any required attributes needed when creating my class.
         '''
         
-    def fit(self, train_df, latent_features=4, learning_rate=0.005, iters=100):
+    def fit(self, train_df, val_df, latent_features=4, learning_rate=0.005, iters=100):
         '''
         Purpose:
             This function performs matrix factorization using a basic form of FunkSVD with no regularization
@@ -26,7 +26,8 @@ class Recommender():
             user_mat - (numpy array) a user by latent feature matrix
             offer_mat - (numpy array) a latent feature by offers matrix
         '''
-        self.offers = train_df.copy()
+        self.train_offers = train_df.copy()
+        self.val_offers = val_df.copy()
 
         # create training user item matrix
         train_user_items = train_df[['customer_id', 'offer_id', 'offer_viewed']]
@@ -34,22 +35,28 @@ class Recommender():
         self.train_user_item_df = self.train_user_item_df.notnull().astype(int)
         self.train_user_item_mat= np.array(self.train_user_item_df)
 
+        # create validation user item matrix
+        val_user_items = val_df[['customer_id', 'offer_id', 'offer_viewed']]
+        self.val_user_item_df = val_user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
+        self.val_user_item_df = self.val_user_item_df.notnull().astype(int)
+        self.val_user_item_mat= np.array(self.val_user_item_df)        
+
         # Store more inputs
         self.latent_features = latent_features
         self.learning_rate = learning_rate
         self.iters = iters
 
-        # Set up useful values to be used through the rest of the function
-        self.n_users = self.train_user_item_mat.shape[0]  # number of rows in the matrix
-        self.n_offers = self.train_user_item_mat.shape[1] # number of offers in the matrix
-        self.num_ratings = np.count_nonzero(~np.isnan(self.train_user_item_mat))  # total number of ratings in the matrix
-        self.customer_ids_series = np.array(self.train_user_item_df.index)
-        self.offer_ids_series = np.array(self.train_user_item_df.columns)
+        # Set up useful training values to be used through the rest of the function
+        self.n_users_train = self.train_user_item_mat.shape[0]  # number of rows in the matrix
+        self.n_offers_train = self.train_user_item_mat.shape[1] # number of offers in the matrix
+        self.num_ratings_train = np.count_nonzero(~np.isnan(self.train_user_item_mat))  # total number of ratings in the matrix
+        self.customer_ids_series_train = np.array(self.train_user_item_df.index)
+        self.offer_ids_series_train = np.array(self.train_user_item_df.columns)
 
         # initialize the user and movie matrices with random values
         # helpful link: https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html
-        user_mat = np.random.rand(self.n_users, self.latent_features)   # customer matrix filled with random values of shape customer x latent
-        offer_mat = np.random.rand(self.latent_features, self.n_offers) # offer matrix filled with random values of shape latent x offers
+        train_user_mat = np.random.rand(self.n_users_train, self.latent_features)   # customer matrix filled with random values of shape customer x latent
+        train_offer_mat = np.random.rand(self.latent_features, self.n_offers_train) # offer matrix filled with random values of shape latent x offers
 
         sse_accum = 0 # initialize sse at 0 for first iteration
         mse_iter = [] # initialize MSE iteration list
@@ -57,7 +64,7 @@ class Recommender():
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
-        print(f'\n{"-" * 25}')
+        print(f'{"-" * 25}')
         #print("Iterations | Mean Squared Error | Mean Absolute Error")
 
         # for each iteration
@@ -76,7 +83,7 @@ class Recommender():
                     if self.train_user_item_mat[i, j] > 0:
                     
                         # compute the error as the actual minus the dot product of the user and offer latent features
-                        diff = self.train_user_item_mat[i, j] - np.dot(user_mat[i, :], offer_mat[:, j])
+                        diff = self.train_user_item_mat[i, j] - np.dot(train_user_mat[i, :], train_offer_mat[:, j])
 
                         # Keep track of the sum of squared errors for the matrix
                         sse_accum += diff**2
@@ -84,30 +91,30 @@ class Recommender():
 
                         # update the values in each matrix in the direction of the gradient
                         for k in range(latent_features):
-                            user_mat[i, k] += learning_rate * (2*diff*offer_mat[k, j])
-                            offer_mat[k, j] += learning_rate * (2*diff*user_mat[i, k])
+                            train_user_mat[i, k] += learning_rate * (2*diff*train_offer_mat[k, j])
+                            train_offer_mat[k, j] += learning_rate * (2*diff*train_user_mat[i, k])
 
             # print results every 15 iterations
             if iteration % 15 == 0:
                 print(f'Iteration {iteration+1}') 
-                print(f'MSE train = {sse_accum / self.num_ratings:.4f}, MSA train = {ae_accum / self.num_ratings:.4f}')
+                print(f'MSE train = {sse_accum / self.num_ratings_train:.4f}, MSA train = {ae_accum / self.num_ratings_train:.4f}')
                 print(f'{"-" * 25}\n')
             
             # save mse for plots
-            mse = sse_accum / self.num_ratings
-            mae = ae_accum / self.num_ratings
+            mse = sse_accum / self.num_ratings_train
+            mae = ae_accum / self.num_ratings_train
             mse_iter.append(mse)
             mae_iter.append(mae)
 
             # SVD based fit
             # Keep user_mat and movie_mat for safe keeping
-            self.user_mat = user_mat
-            self.offer_mat = offer_mat
+            self.train_user_mat = train_user_mat
+            self.train_offer_mat = train_offer_mat
 
             # Knowledge based fit
-            self.ranked_offers = rf.create_ranked_offers(self.offers)
+            self.ranked_offers = rf.create_ranked_offers(self.train_offers)
         
-        return user_mat, offer_mat, mse_iter, mae_iter
+        return train_user_mat, train_offer_mat, mse_iter, mae_iter
     
     def predict_offer(self, customer_id, offer_id):
         '''
