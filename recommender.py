@@ -88,8 +88,7 @@ class Recommender():
 
             # print results every 15 iterations
             if iteration % 15 == 0:
-                #print("%d \t\t %f \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
-                print(f'Iteration {iteration+1}: MSE = {sse_accum / self.num_ratings:.3f}, MSA = {ae_accum / self.num_ratings:.3f}')
+                print(f'Iteration {iteration+1}: MSE = {sse_accum / self.num_ratings:.4f}, MSA = {ae_accum / self.num_ratings:.4f}')
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
@@ -104,6 +103,8 @@ class Recommender():
 
             # Knowledge based fit
             self.ranked_offers = rf.create_ranked_offers(self.offers)
+
+            print(f'{latent_features} latent features summary: MSE = {mse:.4f}, {mae:.4f}')
         
         return user_mat, offer_mat, mse_iter, mae_iter
     
