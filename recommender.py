@@ -88,6 +88,8 @@ class Recommender():
             # update our sse and ae
             old_train_sse = train_sse_accum
             old_val_sse = val_sse_accum
+            old_train_aee = train_ae_accum
+            old_val_ae = val_ae_accum
             train_sse_accum = 0
             val_sse_accum = 0
             train_ae_accum = 0
@@ -121,7 +123,7 @@ class Recommender():
                     
                         # compute the error as the actual minus the dot product of the user and offer latent features
                         diff = self.val_user_item_mat[i, j] - np.dot(val_user_mat[i, :], val_offer_mat[:, j])
-                        print(diff)
+                        
                         # Keep track of the sum of squared errors for the matrix
                         val_sse_accum += diff**2
                         val_ae_accum += abs(diff)
