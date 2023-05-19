@@ -76,8 +76,8 @@ class Recommender():
             ae_accum = 0
         
             # For each user-offer pair
-            for i in range(self.n_users):
-                for j in range(self.n_offers):
+            for i in range(self.n_users_train):
+                for j in range(self.n_offers_train):
                 
                     # if the rating exists
                     if self.train_user_item_mat[i, j] > 0:
