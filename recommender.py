@@ -57,6 +57,7 @@ class Recommender():
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
+        print(f'\n{"-" * 25}')
         #print("Iterations | Mean Squared Error | Mean Absolute Error")
 
         # for each iteration
@@ -88,10 +89,9 @@ class Recommender():
 
             # print results every 15 iterations
             if iteration % 15 == 0:
-                print(f'\n{"-" * 25}')
                 print(f'Iteration {iteration+1}') 
                 print(f'MSE train = {sse_accum / self.num_ratings:.4f}, MSA train = {ae_accum / self.num_ratings:.4f}')
-                print(f'{"-" * 25}')
+                print(f'{"-" * 25}\n')
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
