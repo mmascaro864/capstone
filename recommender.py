@@ -141,7 +141,7 @@ class Recommender():
             val_mse = val_sse_accum / self.num_ratings_val
             val_mae = val_ae_accum / self.num_ratings_val
             val_mse_iter.append(val_mse)
-            train_mae_iter.append(val_mae)
+            val_mae_iter.append(val_mae)
 
             # SVD based fit
             # Keep user_mat and offer_mat for safe keeping
