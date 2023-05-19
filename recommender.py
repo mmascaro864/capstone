@@ -129,8 +129,8 @@ class Recommender():
             # print results every 15 iterations
             if iteration % 15 == 0:
                 print(f'Iteration {iteration+1}') 
-                print(f'MSE train = {val_sse_accum / self.num_ratings_val:.4f}, MSA train = {train_ae_accum / self.num_ratings_val:.4f}')
-                print(f'MSE train = {val_sse_accum / self.num_ratings_val:.4f}, MSA train = {train_ae_accum / self.num_ratings_val:.4f}')
+                print(f'MSE train = {train_sse_accum / self.num_ratings_train:.4f}, MAE train = {train_ae_accum / self.num_ratings_train:.4f}')
+                print(f'MSE val. = {val_sse_accum / self.num_ratings_val:.4f}, MAE val. = {val_ae_accum / self.num_ratings_val:.4f}')
                 print(f'{"-" * 35}')
             
             # save mse for plots
