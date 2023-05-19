@@ -53,14 +53,29 @@ class Recommender():
         self.customer_ids_series_train = np.array(self.train_user_item_df.index)
         self.offer_ids_series_train = np.array(self.train_user_item_df.columns)
 
-        # initialize the user and movie matrices with random values
+        # Set up useful validation values to be used through the rest of the function
+        self.n_users_val = self.val_user_item_mat.shape[0]  # number of rows in the matrix
+        self.n_offers_val = self.val_user_item_mat.shape[1] # number of offers in the matrix
+        self.num_ratings_val = np.count_nonzero(~np.isnan(self.val_user_item_mat))  # total number of ratings in the matrix
+        self.customer_ids_series_val = np.array(self.val_user_item_df.index)
+        self.offer_ids_series_val = np.array(self.val_user_item_df.columns)        
+
+        # initialize the customer and offer matrices with random values
         # helpful link: https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html
         train_user_mat = np.random.rand(self.n_users_train, self.latent_features)   # customer matrix filled with random values of shape customer x latent
         train_offer_mat = np.random.rand(self.latent_features, self.n_offers_train) # offer matrix filled with random values of shape latent x offers
 
-        sse_accum = 0 # initialize sse at 0 for first iteration
-        mse_iter = [] # initialize MSE iteration list
-        mae_iter = [] # initialize MAE iteration list
+        val_user_mat = np.random.rand(self.n_users_val, self.latent_features)   # customer matrix filled with random values of shape customer x latent
+        val_offer_mat = np.random.rand(self.latent_features, self.n_offers_val)
+
+        train_sse_accum = 0 # initialize training sse at 0 for first iteration
+        val_sse_accum = 0 # initialize validation sse at 0 for first iteration
+        train_ae_accum = 0 # initialize training sse at 0 for first iteration
+        val_ae_accum = 0 # initialize validation sse at 0 for first iteration
+        train_mse_iter = [] # initialize training MSE iteration list
+        val_mse_iter = [] # initialize training MSE iteration list
+        train_mae_iter = [] # initialize training MAE iteration list
+        val_mae_iter = [] # initialize training MAE iteration list
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
@@ -70,12 +85,15 @@ class Recommender():
         # for each iteration
         for iteration in range(iters):
 
-            # update our sse
-            old_sse = sse_accum
-            sse_accum = 0
-            ae_accum = 0
+            # update our sse and ae
+            old_train_sse = train_sse_accum
+            old_val_sse = val_sse_accum
+            train_sse_accum = 0
+            val_sse_accum = 0
+            train_ae_accum = 0
+            val_ae_accum = 0
         
-            # For each user-offer pair
+            # train model
             for i in range(self.n_users_train):
                 for j in range(self.n_offers_train):
                 
@@ -86,35 +104,56 @@ class Recommender():
                         diff = self.train_user_item_mat[i, j] - np.dot(train_user_mat[i, :], train_offer_mat[:, j])
 
                         # Keep track of the sum of squared errors for the matrix
-                        sse_accum += diff**2
-                        ae_accum += abs(diff)
+                        train_sse_accum += diff**2
+                        train_ae_accum += abs(diff)
 
                         # update the values in each matrix in the direction of the gradient
                         for k in range(latent_features):
                             train_user_mat[i, k] += learning_rate * (2*diff*train_offer_mat[k, j])
                             train_offer_mat[k, j] += learning_rate * (2*diff*train_user_mat[i, k])
 
+            # validation
+            for i in range(self.n_users_val):
+                for j in range(self.n_offers_val):
+                
+                    # if the rating exists
+                    if self.val_user_item_mat[i, j] > 0:
+                    
+                        # compute the error as the actual minus the dot product of the user and offer latent features
+                        diff = self.val_user_item_mat[i, j] - np.dot(val_user_mat[i, :], val_offer_mat[:, j])
+
+                        # Keep track of the sum of squared errors for the matrix
+                        val_sse_accum += diff**2
+                        val_ae_accum += abs(diff)
+
             # print results every 15 iterations
             if iteration % 15 == 0:
                 print(f'Iteration {iteration+1}') 
-                print(f'MSE train = {sse_accum / self.num_ratings_train:.4f}, MSA train = {ae_accum / self.num_ratings_train:.4f}')
-                print(f'{"-" * 25}\n')
+                print(f'MSE train = {val_sse_accum / self.num_ratings_val:.4f}, MSA train = {train_ae_accum / self.num_ratings_val:.4f}')
+                print(f'MSE train = {val_sse_accum / self.num_ratings_val:.4f}, MSA train = {train_ae_accum / self.num_ratings_val:.4f}')
+                print(f'{"-" * 35}')
             
             # save mse for plots
-            mse = sse_accum / self.num_ratings_train
-            mae = ae_accum / self.num_ratings_train
-            mse_iter.append(mse)
-            mae_iter.append(mae)
+            train_mse = train_sse_accum / self.num_ratings_train
+            train_mae = train_ae_accum / self.num_ratings_train
+            train_mse_iter.append(train_mse)
+            train_mae_iter.append(train_mae)
+            val_mse = val_sse_accum / self.num_ratings_val
+            val_mae = val_ae_accum / self.num_ratings_val
+            val_mse_iter.append(val_mse)
+            train_mae_iter.append(val_mae)
 
             # SVD based fit
-            # Keep user_mat and movie_mat for safe keeping
+            # Keep user_mat and offer_mat for safe keeping
             self.train_user_mat = train_user_mat
             self.train_offer_mat = train_offer_mat
+            self.val_user_mat = val_user_mat
+            self.val_offer_mat = val_offer_mat
 
             # Knowledge based fit
-            self.ranked_offers = rf.create_ranked_offers(self.train_offers)
+            self.train_ranked_offers = rf.create_ranked_offers(self.train_offers)
         
-        return train_user_mat, train_offer_mat, mse_iter, mae_iter
+        return train_mse_iter, train_mae_iter, val_mse_iter, val_mae_iter
     
     def predict_offer(self, customer_id, offer_id):
         '''
@@ -127,11 +166,11 @@ class Recommender():
         '''
         try:
             # customer row and offer column
-            customer_row = np.where(self.customer_ids_series == customer_id)[0][0]
-            offer_col = np.where(self.offer_ids_series == offer_id)[0][0]
+            customer_row = np.where(self.customer_ids_series_train == customer_id)[0][0]
+            offer_col = np.where(self.offer_ids_series_train == offer_id)[0][0]
 
             # Take dot product of that row and column in U and V to make prediction
-            pred = np.dot(self.user_mat[customer_row, :], self.offer_mat[:, offer_col])
+            pred = np.dot(self.train_user_mat[customer_row, :], self.train_offer_mat[:, offer_col])
 
             print('For user {}, we predict a {} rating for offer {}.'.format(customer_id, pred, offer_id))
 
@@ -154,12 +193,12 @@ class Recommender():
         '''
 
         rec_ids, rec_offers = None, None
-        if _id in self.customer_ids_series:
+        if _id in self.customer_ids_series_train:
             # Get the index of which row the user is in for use in U matrix
-            idx = np.where(self.customer_ids_series == _id)[0][0]
+            idx = np.where(self.customer_ids_series_train == _id)[0][0]
                 
             # take the dot product of that row and the V matrix
-            preds = np.dot(self.user_mat[idx,:],self.offer_mat)
+            preds = np.dot(self.train_user_mat[idx,:],self.train_offer_mat)
                 
             # pull the top movies according to the prediction
             indices = preds.argsort()[-rec_num:][::-1] #indices
