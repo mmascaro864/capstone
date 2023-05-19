@@ -11,7 +11,7 @@ class Recommender():
         I didn't have any required attributes needed when creating my class.
         '''
         
-    def fit(self, df, latent_features=4, learning_rate=0.005, iters=100):
+    def fit(self, train_df, latent_features=4, learning_rate=0.005, iters=100):
         '''
         Purpose:
             This function performs matrix factorization using a basic form of FunkSVD with no regularization
@@ -26,13 +26,13 @@ class Recommender():
             user_mat - (numpy array) a user by latent feature matrix
             offer_mat - (numpy array) a latent feature by offers matrix
         '''
-        self.offers = df.copy()
+        self.offers = train_df.copy()
 
-        # create user item matrix
-        user_items = df[['customer_id', 'offer_id', 'offer_viewed']]
-        self.user_item_df = user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
-        self.user_item_df = self.user_item_df.notnull().astype(int)
-        self.user_item_mat= np.array(self.user_item_df)
+        # create training user item matrix
+        train_user_items = train_df[['customer_id', 'offer_id', 'offer_viewed']]
+        self.train_user_item_df = train_user_items.groupby(['customer_id', 'offer_id'])['offer_viewed'].max().unstack()
+        self.train_user_item_df = self.train_user_item_df.notnull().astype(int)
+        self.train_user_item_mat= np.array(self.train_user_item_df)
 
         # Store more inputs
         self.latent_features = latent_features
@@ -40,11 +40,11 @@ class Recommender():
         self.iters = iters
 
         # Set up useful values to be used through the rest of the function
-        self.n_users = self.user_item_mat.shape[0]  # number of rows in the matrix
-        self.n_offers = self.user_item_mat.shape[1] # number of offers in the matrix
-        self.num_ratings = np.count_nonzero(~np.isnan(self.user_item_mat))  # total number of ratings in the matrix
-        self.customer_ids_series = np.array(self.user_item_df.index)
-        self.offer_ids_series = np.array(self.user_item_df.columns)
+        self.n_users = self.train_user_item_mat.shape[0]  # number of rows in the matrix
+        self.n_offers = self.train_user_item_mat.shape[1] # number of offers in the matrix
+        self.num_ratings = np.count_nonzero(~np.isnan(self.train_user_item_mat))  # total number of ratings in the matrix
+        self.customer_ids_series = np.array(self.train_user_item_df.index)
+        self.offer_ids_series = np.array(self.train_user_item_df.columns)
 
         # initialize the user and movie matrices with random values
         # helpful link: https://numpy.org/doc/stable/reference/random/generated/numpy.random.rand.html
@@ -72,10 +72,10 @@ class Recommender():
                 for j in range(self.n_offers):
                 
                     # if the rating exists
-                    if self.user_item_mat[i, j] > 0:
+                    if self.train_user_item_mat[i, j] > 0:
                     
                         # compute the error as the actual minus the dot product of the user and offer latent features
-                        diff = self.user_item_mat[i, j] - np.dot(user_mat[i, :], offer_mat[:, j])
+                        diff = self.train_user_item_mat[i, j] - np.dot(user_mat[i, :], offer_mat[:, j])
 
                         # Keep track of the sum of squared errors for the matrix
                         sse_accum += diff**2
