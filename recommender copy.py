@@ -53,7 +53,6 @@ class Recommender():
 
         sse_accum = 0 # initialize sse at 0 for first iteration
         mse_iter = [] # initialize MSE iteration list
-        mae_iter = [] # initialize MAE iteration list
     
         # keep track of iteration and MSE
         print("Optimization Statistics")
@@ -89,13 +88,11 @@ class Recommender():
             # print results every 15 iterations
             if iteration % 15 == 0:
                 #print("%d \t\t %f \t\t %f" % (iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
-                print(f'Iteration {iteration+1}: MSE = {sse_accum / self.num_ratings:.3f}, MSA = {ae_accum / self.num_ratings:.3f}')
+                print('Iteration {}: MSE = {}, MSA = {}'.format(iteration+1, sse_accum / self.num_ratings, ae_accum / self.num_ratings))
             
             # save mse for plots
             mse = sse_accum / self.num_ratings
-            mae = ae_accum / self.num_ratings
             mse_iter.append(mse)
-            mae_iter.append(mae)
 
             # SVD based fit
             # Keep user_mat and movie_mat for safe keeping
@@ -105,7 +102,7 @@ class Recommender():
             # Knowledge based fit
             self.ranked_offers = rf.create_ranked_offers(self.offers)
         
-        return user_mat, offer_mat, mse_iter, mae_iter
+        return user_mat, offer_mat, mse_iter
     
     def predict_offer(self, customer_id, offer_id):
         '''
