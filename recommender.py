@@ -103,8 +103,6 @@ class Recommender():
 
             # Knowledge based fit
             self.ranked_offers = rf.create_ranked_offers(self.offers)
-
-            print(f'{latent_features} latent features summary: MSE = {mse:.4f}, {mae:.4f}')
         
         return user_mat, offer_mat, mse_iter, mae_iter
     
