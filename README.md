@@ -73,6 +73,8 @@ The following files are in the repository:
 | Create dataframe from multiple numpy arrays | https://stackoverflow.com/questions/49263247/how-can-i-make-a-pandas-dataframe-out-of-multiple-numpy-arrays
 | Train/Test/Split usage | https://www.geeksforgeeks.org/how-to-split-the-dataset-with-scikit-learns-train_test_split-function/
 | Create dataframe from dataframe .describe() | https://stackoverflow.com/questions/34026089/create-dataframe-from-another-dataframe-describe-pandas
+| Gradient Descent | https://www.ibm.com/topics/gradient-descent#:~:text=Gradient%20descent%20is%20an%20optimization,each%20iteration%20of%20parameter%20updates.
+| FunkSVD | https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems), https://sifter.org/~simon/journal/20061211.html
               
 
 ## Acknowledgements
