@@ -20,16 +20,19 @@ class Recommender():
             This function performs matrix factorization using a basic form of FunkSVD with no regularization
     
         INPUT:
-            ratings_mat - (numpy array) a matrix with users as rows, movies as columns, and ratings as values
+            train_df - training dataframe
+            val_df - validation dataframe
             latent_features - (int) the number of latent features used
             learning_rate - (float) the learning rate 
             iters - (int) the number of iterations
     
         OUTPUT:
-            user_mat - (numpy array) a user by latent feature matrix
-            offer_mat - (numpy array) a latent feature by offers matrix
+            train_mse_iter - array of mean squared error values from model training
+            train_mae_iter -  array of mean absolute error values from model training
+            val_mse_iter - array of mean squared error values from model validation
+            val_mae_iter - array of mean absolute error values from model validation
         '''
-
+        # copy training and validation dataframes
         self.train_offers = train_df.copy()
         self.val_offers = val_df.copy()
         
@@ -64,11 +67,11 @@ class Recommender():
         self.customer_ids_series_val = np.array(self.val_user_item_df.index)
         self.offer_ids_series_val = np.array(self.val_user_item_df.columns)  
 
-        train_user_mat = np.random.rand(self.n_users_train, self.latent_features)   # customer matrix filled with random values of shape customer x latent
-        train_offer_mat = np.random.rand(self.latent_features, self.n_offers_train)
+        train_user_mat = np.random.rand(self.n_users_train, self.latent_features)   # customer matrix filled with random values of shape customer x latent features
+        train_offer_mat = np.random.rand(self.latent_features, self.n_offers_train) # offer matrix filled with random values of shape latent features x offer
 
-        val_user_mat = np.random.rand(self.n_users_val, self.latent_features)   # customer matrix filled with random values of shape customer x latent
-        val_offer_mat = np.random.rand(self.latent_features, self.n_offers_val)
+        val_user_mat = np.random.rand(self.n_users_val, self.latent_features)   # customer matrix filled with random values of shape customer x latent features
+        val_offer_mat = np.random.rand(self.latent_features, self.n_offers_val) # offer matrix filled with random values of shape latent features x offer
 
         # initialize variables
         train_sse_accum = 0
@@ -139,7 +142,7 @@ class Recommender():
                 print(f'Iteration {iterations+1}') 
                 print(f'MSE: train = {train_sse_accum / self.num_ratings_train:.4f}, valid. = {val_sse_accum / self.num_ratings_val:.4f}')
                 print(f'MAE: train = {train_ae_accum / self.num_ratings_train:.4f}, valid. = {val_ae_accum / self.num_ratings_val:.4f}')
-                print(f'{"-" * 35}')
+                print(f'{"-" * 40}')
 
             train_mse = train_sse_accum / self.num_ratings_train
             train_mse_iter.append(train_mse)
