@@ -8,7 +8,7 @@
 * [Python Version and Libraries Used](#python-version-and-libraries-used)
 * [Files in Repository](#files-in-repository)
 * [References](#references)
-* [Blog Article] (#blog-article)
+* [Blog Article](#blog-article)
 * [Acknowledgements](#acknowledgements)
 
 ## Introduction
