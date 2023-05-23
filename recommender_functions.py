@@ -1,3 +1,9 @@
+'''
+recommender_functions.py:
+    - companion functions supporting Recommender class in recommender.py
+'''
+
+# import libraries
 import pandas as pd
 import numpy as np
 
