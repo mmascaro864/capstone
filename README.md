@@ -8,6 +8,7 @@
 * [Python Version and Libraries Used](#python-version-and-libraries-used)
 * [Files in Repository](#files-in-repository)
 * [References](#references)
+* [Blog Article] (#blog-article)
 * [Acknowledgements](#acknowledgements)
 
 ## Introduction
@@ -76,6 +77,8 @@ The following files are in the repository:
 | Gradient Descent | https://www.ibm.com/topics/gradient-descent#:~:text=Gradient%20descent%20is%20an%20optimization,each%20iteration%20of%20parameter%20updates.
 | FunkSVD | https://en.wikipedia.org/wiki/Matrix_factorization_(recommender_systems), https://sifter.org/~simon/journal/20061211.html
               
+## Blog Article
+A blog article associated with this project is published on Medium [here](https://medium.com/@marc.j.mascaro/using-funksvd-to-predict-response-and-make-recommendations-6c566741d0f0)
 
 ## Acknowledgements
 [Udacity](https://www.udacity.com/) and [Starbucks](https://www.starbucks.com/) - for providing the datasets for this project.
